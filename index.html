@@ -94,22 +94,29 @@
             // TODO: parse and render
           })
           .catch(function(err) {
-            showError('Fehler beim Lesen der Datei: ' + err.message);
+            showError('Datei konnte nicht gelesen werden. Bitte eine gültige .docx-Datei auswählen.');
+            console.error('mammoth error:', err);
           });
+      };
+      reader.onerror = function() {
+        showError('Fehler beim Lesen der Datei.');
       };
       reader.readAsArrayBuffer(file);
     }
 
     fileInput.addEventListener('change', function(e) {
       readDocx(e.target.files[0]);
+      fileInput.value = '';
     });
 
     dropZone.addEventListener('dragover', function(e) {
       e.preventDefault();
       dropZone.classList.add('drag-over');
     });
-    dropZone.addEventListener('dragleave', function() {
-      dropZone.classList.remove('drag-over');
+    dropZone.addEventListener('dragleave', function(e) {
+      if (!dropZone.contains(e.relatedTarget)) {
+        dropZone.classList.remove('drag-over');
+      }
     });
     dropZone.addEventListener('drop', function(e) {
       e.preventDefault();
