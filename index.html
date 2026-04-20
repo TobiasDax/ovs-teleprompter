@@ -49,94 +49,93 @@
     }
 
     /* Teleprompter screen (hidden initially) */
-    #teleprompter-screen { display: none; }
+    #teleprompter-screen { display: none; padding: 2rem 1rem 6rem; }
 
-/* Teleprompter table layout */
-#teleprompter-screen { padding: 2rem 1rem 6rem; }
-#table-container { max-width: 90vw; margin: 0 auto; }
+    /* Teleprompter table layout */
+    #table-container { max-width: 90vw; margin: 0 auto; }
 
-table.teleprompter { width: 100%; border-collapse: collapse; }
-table.teleprompter td, table.teleprompter th {
-  border: none;
-  border-bottom: 1px solid #333;
-  padding: 0.5rem 0.75rem;
-  vertical-align: top;
-}
+    table.teleprompter { width: 100%; border-collapse: collapse; }
+    table.teleprompter td, table.teleprompter th {
+      border: none;
+      border-bottom: 1px solid #333;
+      padding: 0.5rem 0.75rem;
+      vertical-align: top;
+    }
 
-/* Scene number column */
-table.teleprompter td.col-num {
-  opacity: 0.7;
-  font-size: 1rem;
-  white-space: nowrap;
-  width: 4rem;
-}
+    /* Scene number column */
+    table.teleprompter td.col-num {
+      opacity: 0.7;
+      font-size: 1rem;
+      white-space: nowrap;
+      width: 4rem;
+    }
 
-/* Hidden columns */
-table.teleprompter td.col-bildebene,
-table.teleprompter th.col-bildebene,
-table.teleprompter td.col-bemerkung,
-table.teleprompter th.col-bemerkung { display: none; }
+    /* Hidden columns */
+    table.teleprompter td.col-bildebene,
+    table.teleprompter th.col-bildebene,
+    table.teleprompter td.col-bemerkung,
+    table.teleprompter th.col-bemerkung { display: none; }
 
-/* Show hidden columns when toggle is active */
-table.teleprompter.columns-visible td.col-bildebene,
-table.teleprompter.columns-visible th.col-bildebene,
-table.teleprompter.columns-visible td.col-bemerkung,
-table.teleprompter.columns-visible th.col-bemerkung { display: table-cell; }
+    /* Show hidden columns when toggle is active */
+    table.teleprompter.columns-visible td.col-bildebene,
+    table.teleprompter.columns-visible th.col-bildebene,
+    table.teleprompter.columns-visible td.col-bemerkung,
+    table.teleprompter.columns-visible th.col-bemerkung { display: table-cell; }
 
-/* Section header rows: always visible */
-table.teleprompter tr.section-row td {
-  display: table-cell !important;
-  font-weight: bold;
-  font-size: 1.1rem;
-  padding: 1.25rem 0.75rem 0.5rem;
-  color: #aaa;
-  background: #272a2d;
-}
+    /* Section header rows: always visible */
+    table.teleprompter tr.section-row td {
+      display: table-cell !important;
+      font-weight: bold;
+      font-size: 1.1rem;
+      padding: 1.25rem 0.75rem 0.5rem;
+      color: #aaa;
+      background: #272a2d;
+    }
 
-/* Text formatting */
-table.teleprompter strong { color: greenyellow; }
-table.teleprompter em { color: #ff6900; }
+    /* Text formatting */
+    table.teleprompter strong { color: greenyellow; }
+    table.teleprompter em { color: #ff6900; }
 
-/* Teleprompter paragraph spacing */
-table.teleprompter td p { display: block; margin-bottom: 10rem; }
-table.teleprompter td p:last-child { margin-bottom: 0; }
+    /* Teleprompter paragraph spacing */
+    table.teleprompter td p { display: block; margin-bottom: 10rem; }
+    table.teleprompter td p:last-child { margin-bottom: 0; }
 
-/* Images */
-table.teleprompter td img { max-width: 100%; height: auto; display: block; margin: 0.5rem 0; }
+    /* Images */
+    table.teleprompter td img { max-width: 100%; height: auto; display: block; margin: 0.5rem 0; }
 
-/* Toggle button */
-#toggle-btn {
-  position: fixed;
-  top: 20%;
-  left: 2rem;
-  background: transparent;
-  color: red;
-  border: none;
-  font-size: 3rem;
-  cursor: pointer;
-  padding: 5px;
-  border-radius: 5px 20px;
-  line-height: 1;
-  transition: transform 0.25s;
-  z-index: 100;
-}
-#toggle-btn.active { transform: rotate(180deg); }
+    /* Toggle button */
+    #toggle-btn {
+      position: fixed;
+      top: 20%;
+      left: 2rem;
+      background: transparent;
+      color: red;
+      border: none;
+      font-size: 3rem;
+      cursor: pointer;
+      padding: 5px;
+      border-radius: 5px 20px;
+      line-height: 1;
+      transition: transform 0.25s;
+      z-index: 100;
+    }
+    #toggle-btn.active { transform: rotate(180deg); }
 
-/* Back button */
-#back-btn {
-  position: fixed;
-  top: 1rem;
-  right: 1rem;
-  background: transparent;
-  color: #888;
-  border: 1px solid #555;
-  border-radius: 6px;
-  padding: 0.4rem 0.8rem;
-  cursor: pointer;
-  font-size: 0.85rem;
-  z-index: 100;
-}
-#back-btn:hover { color: #e8eaed; border-color: #e8eaed; }
+    /* Back button */
+    #back-btn {
+      position: fixed;
+      top: 1rem;
+      right: 1rem;
+      background: transparent;
+      color: #888;
+      border: 1px solid #555;
+      border-radius: 6px;
+      padding: 0.4rem 0.8rem;
+      cursor: pointer;
+      font-size: 0.85rem;
+      z-index: 100;
+    }
+    #back-btn:hover { color: #e8eaed; border-color: #e8eaed; }
   </style>
 </head>
 <body>
@@ -152,8 +151,8 @@ table.teleprompter td img { max-width: 100%; height: auto; display: block; margi
   </div>
 
   <div id="teleprompter-screen">
-    <button id="toggle-btn">&#10148;</button>
-    <button id="back-btn">&#8592; Neues Skript</button>
+    <button id="toggle-btn" aria-label="Bildebene und Bemerkung einblenden">&#10148;</button>
+    <button id="back-btn" aria-label="Neues Skript laden">&#8592; Neues Skript</button>
     <div id="table-container"></div>
   </div>
 
@@ -284,8 +283,6 @@ table.teleprompter td img { max-width: 100%; height: auto; display: block; margi
       reader.onload = function(e) {
         mammoth.convertToHtml({ arrayBuffer: e.target.result })
           .then(function(result) {
-            console.log('=== mammoth HTML output (first 2000 chars) ===');
-            console.log(result.value.substring(0, 2000));
             var data;
             try {
               data = parseDocxHtml(result.value);
@@ -294,12 +291,9 @@ table.teleprompter td img { max-width: 100%; height: auto; display: block; margi
               console.error('parse error:', parseErr);
               return;
             }
-            console.log('Parsed rows:', data.rows.length);
-            console.log('First section row:', data.rows.find(function(r) { return r.type === 'section'; }));
-            console.log('First content row:', data.rows.find(function(r) { return r.type === 'content'; }));
             const tableHtml = renderTeleprompter(data);
             const container = document.getElementById('table-container');
-            container.innerHTML = tableHtml;
+            container.innerHTML = DOMPurify.sanitize(tableHtml);
             document.getElementById('upload-screen').style.display = 'none';
             document.getElementById('teleprompter-screen').style.display = 'block';
           })
