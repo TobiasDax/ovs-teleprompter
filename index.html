@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Teleprompter</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { background: #202124; color: #e8eaed; font-family: sans-serif; min-height: 100vh; }
+  </style>
+</head>
+<body>
+  <p style="padding:2rem;">Scaffold OK</p>
+  <script src="mammoth.min.js"></script>
+  <script src="purify.min.js"></script>
+  <script>
+    console.log('mammoth loaded:', typeof mammoth !== 'undefined');
+    console.log('DOMPurify loaded:', typeof DOMPurify !== 'undefined');
+  </script>
+</body>
+</html>
