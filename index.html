@@ -333,6 +333,23 @@
         fileInput.click();
       }
     });
+
+    document.getElementById('toggle-btn').addEventListener('click', function() {
+      const table = document.querySelector('table.teleprompter');
+      const btn   = document.getElementById('toggle-btn');
+      if (!table) { return; }
+      table.classList.toggle('columns-visible');
+      btn.classList.toggle('active');
+    });
+
+    document.getElementById('back-btn').addEventListener('click', function() {
+      document.getElementById('teleprompter-screen').style.display = 'none';
+      document.getElementById('table-container').innerHTML = '';
+      document.getElementById('upload-screen').style.display = 'flex';
+      document.getElementById('error-msg').textContent = '';
+      document.getElementById('file-input').value = '';
+      document.getElementById('toggle-btn').classList.remove('active');
+    });
   </script>
 </body>
 </html>
