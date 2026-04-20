@@ -50,6 +50,93 @@
 
     /* Teleprompter screen (hidden initially) */
     #teleprompter-screen { display: none; }
+
+/* Teleprompter table layout */
+#teleprompter-screen { padding: 2rem 1rem 6rem; }
+#table-container { max-width: 90vw; margin: 0 auto; }
+
+table.teleprompter { width: 100%; border-collapse: collapse; }
+table.teleprompter td, table.teleprompter th {
+  border: none;
+  border-bottom: 1px solid #333;
+  padding: 0.5rem 0.75rem;
+  vertical-align: top;
+}
+
+/* Scene number column */
+table.teleprompter td.col-num {
+  opacity: 0.7;
+  font-size: 1rem;
+  white-space: nowrap;
+  width: 4rem;
+}
+
+/* Hidden columns */
+table.teleprompter td.col-bildebene,
+table.teleprompter th.col-bildebene,
+table.teleprompter td.col-bemerkung,
+table.teleprompter th.col-bemerkung { display: none; }
+
+/* Show hidden columns when toggle is active */
+table.teleprompter.columns-visible td.col-bildebene,
+table.teleprompter.columns-visible th.col-bildebene,
+table.teleprompter.columns-visible td.col-bemerkung,
+table.teleprompter.columns-visible th.col-bemerkung { display: table-cell; }
+
+/* Section header rows: always visible */
+table.teleprompter tr.section-row td {
+  display: table-cell !important;
+  font-weight: bold;
+  font-size: 1.1rem;
+  padding: 1.25rem 0.75rem 0.5rem;
+  color: #aaa;
+  background: #272a2d;
+}
+
+/* Text formatting */
+table.teleprompter strong { color: greenyellow; }
+table.teleprompter em { color: #ff6900; }
+
+/* Teleprompter paragraph spacing */
+table.teleprompter td p { display: block; margin-bottom: 10rem; }
+table.teleprompter td p:last-child { margin-bottom: 0; }
+
+/* Images */
+table.teleprompter td img { max-width: 100%; height: auto; display: block; margin: 0.5rem 0; }
+
+/* Toggle button */
+#toggle-btn {
+  position: fixed;
+  top: 20%;
+  left: 2rem;
+  background: transparent;
+  color: red;
+  border: none;
+  font-size: 3rem;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 5px 20px;
+  line-height: 1;
+  transition: transform 0.25s;
+  z-index: 100;
+}
+#toggle-btn.active { transform: rotate(180deg); }
+
+/* Back button */
+#back-btn {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  color: #888;
+  border: 1px solid #555;
+  border-radius: 6px;
+  padding: 0.4rem 0.8rem;
+  cursor: pointer;
+  font-size: 0.85rem;
+  z-index: 100;
+}
+#back-btn:hover { color: #e8eaed; border-color: #e8eaed; }
   </style>
 </head>
 <body>
@@ -65,7 +152,9 @@
   </div>
 
   <div id="teleprompter-screen">
-    <!-- filled by JS -->
+    <button id="toggle-btn">&#10148;</button>
+    <button id="back-btn">&#8592; Neues Skript</button>
+    <div id="table-container"></div>
   </div>
 
   <script src="mammoth.min.js"></script>
@@ -142,6 +231,49 @@
       return { rows: rows };
     }
 
+    /**
+     * Builds sanitized HTML for the teleprompter table.
+     * All cell content from mammoth is sanitized with DOMPurify before DOM insertion.
+     */
+    function renderTeleprompter(data) {
+      const tbodyRows = data.rows.map(function(row) {
+        if (row.type === 'section') {
+          const sectionHtml = DOMPurify.sanitize(row.html);
+          const tr = document.createElement('tr');
+          tr.className = 'section-row';
+          const td = document.createElement('td');
+          td.setAttribute('colspan', '4');
+          td.innerHTML = sectionHtml;
+          tr.appendChild(td);
+          return tr.outerHTML;
+        }
+        const numHtml  = DOMPurify.sanitize(row.sceneNumber);
+        const bildHtml = DOMPurify.sanitize(row.bildebene);
+        const tonHtml  = DOMPurify.sanitize(row.tonebene);
+        const bemHtml  = DOMPurify.sanitize(row.bemerkung);
+        return (
+          '<tr>' +
+            '<td class="col-num">'       + numHtml  + '</td>' +
+            '<td class="col-bildebene">' + bildHtml + '</td>' +
+            '<td class="col-tonebene">'  + tonHtml  + '</td>' +
+            '<td class="col-bemerkung">' + bemHtml  + '</td>' +
+          '</tr>'
+        );
+      }).join('');
+
+      return (
+        '<table class="teleprompter">' +
+          '<thead><tr>' +
+            '<th class="col-num">#</th>' +
+            '<th class="col-bildebene">Bildebene</th>' +
+            '<th class="col-tonebene">Tonebene</th>' +
+            '<th class="col-bemerkung">Bemerkung</th>' +
+          '</tr></thead>' +
+          '<tbody>' + tbodyRows + '</tbody>' +
+        '</table>'
+      );
+    }
+
     function readDocx(file) {
       if (!file || !file.name.toLowerCase().endsWith('.docx')) {
         showError('Bitte eine .docx-Datei auswählen.');
@@ -165,7 +297,11 @@
             console.log('Parsed rows:', data.rows.length);
             console.log('First section row:', data.rows.find(function(r) { return r.type === 'section'; }));
             console.log('First content row:', data.rows.find(function(r) { return r.type === 'content'; }));
-            // TODO: render
+            const tableHtml = renderTeleprompter(data);
+            const container = document.getElementById('table-container');
+            container.innerHTML = tableHtml;
+            document.getElementById('upload-screen').style.display = 'none';
+            document.getElementById('teleprompter-screen').style.display = 'block';
           })
           .catch(function(err) {
             showError('Datei konnte nicht gelesen werden. Bitte eine gültige .docx-Datei auswählen.');
