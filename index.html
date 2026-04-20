@@ -287,7 +287,31 @@
             try {
               data = parseDocxHtml(result.value);
             } catch (parseErr) {
-              showError(parseErr.message);
+              // Readable .docx but wrong structure — show error on teleprompter screen
+              document.getElementById('upload-screen').style.display = 'none';
+              document.getElementById('teleprompter-screen').style.display = 'block';
+              const errNode = document.createElement('div');
+              errNode.style.cssText = 'padding:3rem;color:#ff6b6b;';
+              const heading = document.createElement('p');
+              heading.style.cssText = 'font-size:1.2rem;margin-bottom:1rem;';
+              heading.textContent = '\u26A0 Unerwartetes Tabellenformat';
+              const detail = document.createElement('p');
+              detail.textContent = parseErr.message;
+              const backWrap = document.createElement('p');
+              backWrap.style.marginTop = '1.5rem';
+              const backLink = document.createElement('button');
+              backLink.textContent = '\u2190 Andere Datei w\u00e4hlen';
+              backLink.style.cssText = 'background:transparent;border:1px solid #555;color:#aaa;' +
+                'padding:0.4rem 0.8rem;border-radius:6px;cursor:pointer;';
+              backLink.addEventListener('click', function() {
+                document.getElementById('back-btn').click();
+              });
+              backWrap.appendChild(backLink);
+              errNode.appendChild(heading);
+              errNode.appendChild(detail);
+              errNode.appendChild(backWrap);
+              document.getElementById('table-container').innerHTML = '';
+              document.getElementById('table-container').appendChild(errNode);
               console.error('parse error:', parseErr);
               return;
             }
