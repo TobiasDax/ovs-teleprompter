@@ -97,6 +97,7 @@
     /* Text formatting */
     table.teleprompter strong { color: greenyellow; }
     table.teleprompter em { color: #ff6900; }
+    table.teleprompter .bracket-text { color: #ff6900; }
 
     /* Teleprompter paragraph spacing */
     table.teleprompter td p { display: block; margin-bottom: 10rem; }
@@ -232,6 +233,11 @@
       return { rows: rows };
     }
 
+    /** Wraps [bracketed text] in an orange-coloured span. */
+    function wrapBrackets(html) {
+      return html.replace(/\[([^\]]*)\]/g, '<span class="bracket-text">[$1]</span>');
+    }
+
     /**
      * Builds sanitized HTML for the teleprompter table.
      * All cell content from mammoth is sanitized with DOMPurify before DOM insertion.
@@ -248,10 +254,10 @@
           tr.appendChild(td);
           return tr.outerHTML;
         }
-        const numHtml  = DOMPurify.sanitize(row.sceneNumber);
-        const bildHtml = DOMPurify.sanitize(row.bildebene);
-        const tonHtml  = DOMPurify.sanitize(row.tonebene);
-        const bemHtml  = DOMPurify.sanitize(row.bemerkung);
+        const numHtml  = DOMPurify.sanitize(wrapBrackets(row.sceneNumber));
+        const bildHtml = DOMPurify.sanitize(wrapBrackets(row.bildebene));
+        const tonHtml  = DOMPurify.sanitize(wrapBrackets(row.tonebene));
+        const bemHtml  = DOMPurify.sanitize(wrapBrackets(row.bemerkung));
         return (
           '<tr>' +
             '<td class="col-num">'       + numHtml  + '</td>' +
