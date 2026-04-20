@@ -7,15 +7,71 @@
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     body { background: #202124; color: #e8eaed; font-family: sans-serif; min-height: 100vh; }
+
+    /* Upload screen */
+    #upload-screen {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      gap: 1.5rem;
+    }
+    #upload-screen h1 { font-size: 2rem; font-weight: 300; letter-spacing: 0.1em; }
+    #drop-zone {
+      border: 2px dashed #555;
+      border-radius: 12px;
+      padding: 3rem 4rem;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      width: 400px;
+      max-width: 90vw;
+    }
+    #drop-zone.drag-over { border-color: #e8eaed; background: #2a2c2f; }
+    #drop-zone p { margin-bottom: 1rem; color: #aaa; }
+    #file-input { display: none; }
+    #choose-label {
+      display: inline-block;
+      padding: 0.6rem 1.4rem;
+      background: #e8eaed;
+      color: #202124;
+      border-radius: 6px;
+      cursor: pointer;
+      font-weight: 600;
+    }
+    #choose-label:hover { background: #fff; }
+    #error-msg {
+      color: #ff6b6b;
+      font-size: 0.9rem;
+      min-height: 1.2em;
+      text-align: center;
+    }
+
+    /* Teleprompter screen (hidden initially) */
+    #teleprompter-screen { display: none; }
   </style>
 </head>
 <body>
-  <p style="padding:2rem;">Scaffold OK</p>
+
+  <div id="upload-screen">
+    <h1>Teleprompter</h1>
+    <div id="drop-zone">
+      <p>Skript hierher ziehen</p>
+      <input type="file" id="file-input" accept=".docx">
+      <label id="choose-label" for="file-input">Datei auswaehlen</label>
+    </div>
+    <div id="error-msg"></div>
+  </div>
+
+  <div id="teleprompter-screen">
+    <!-- filled by JS -->
+  </div>
+
   <script src="mammoth.min.js"></script>
   <script src="purify.min.js"></script>
   <script>
-    console.log('mammoth loaded:', typeof mammoth !== 'undefined');
-    console.log('DOMPurify loaded:', typeof DOMPurify !== 'undefined');
+    // placeholder
   </script>
 </body>
 </html>
