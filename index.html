@@ -288,13 +288,11 @@
               data = parseDocxHtml(result.value);
             } catch (parseErr) {
               // Readable .docx but wrong structure — show error on teleprompter screen
-              document.getElementById('upload-screen').style.display = 'none';
-              document.getElementById('teleprompter-screen').style.display = 'block';
               const errNode = document.createElement('div');
               errNode.style.cssText = 'padding:3rem;color:#ff6b6b;';
               const heading = document.createElement('p');
               heading.style.cssText = 'font-size:1.2rem;margin-bottom:1rem;';
-              heading.textContent = '\u26A0 Unerwartetes Tabellenformat';
+              heading.textContent = '\u26A0 Dateistruktur nicht erkannt';
               const detail = document.createElement('p');
               detail.textContent = parseErr.message;
               const backWrap = document.createElement('p');
@@ -312,6 +310,8 @@
               errNode.appendChild(backWrap);
               document.getElementById('table-container').innerHTML = '';
               document.getElementById('table-container').appendChild(errNode);
+              document.getElementById('upload-screen').style.display = 'none';
+              document.getElementById('teleprompter-screen').style.display = 'block';
               console.error('parse error:', parseErr);
               return;
             }
