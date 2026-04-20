@@ -71,7 +71,57 @@
   <script src="mammoth.min.js"></script>
   <script src="purify.min.js"></script>
   <script>
-    // placeholder
+    const fileInput = document.getElementById('file-input');
+    const dropZone  = document.getElementById('drop-zone');
+    const errorMsg  = document.getElementById('error-msg');
+
+    function showError(msg) {
+      errorMsg.textContent = msg;
+    }
+
+    function readDocx(file) {
+      if (!file || !file.name.toLowerCase().endsWith('.docx')) {
+        showError('Bitte eine .docx-Datei auswählen.');
+        return;
+      }
+      showError('');
+      const reader = new FileReader();
+      reader.onload = function(e) {
+        mammoth.convertToHtml({ arrayBuffer: e.target.result })
+          .then(function(result) {
+            console.log('=== mammoth HTML output (first 2000 chars) ===');
+            console.log(result.value.substring(0, 2000));
+            // TODO: parse and render
+          })
+          .catch(function(err) {
+            showError('Fehler beim Lesen der Datei: ' + err.message);
+          });
+      };
+      reader.readAsArrayBuffer(file);
+    }
+
+    fileInput.addEventListener('change', function(e) {
+      readDocx(e.target.files[0]);
+    });
+
+    dropZone.addEventListener('dragover', function(e) {
+      e.preventDefault();
+      dropZone.classList.add('drag-over');
+    });
+    dropZone.addEventListener('dragleave', function() {
+      dropZone.classList.remove('drag-over');
+    });
+    dropZone.addEventListener('drop', function(e) {
+      e.preventDefault();
+      dropZone.classList.remove('drag-over');
+      readDocx(e.dataTransfer.files[0]);
+    });
+
+    dropZone.addEventListener('click', function(e) {
+      if (e.target !== document.getElementById('choose-label') && e.target !== fileInput) {
+        fileInput.click();
+      }
+    });
   </script>
 </body>
 </html>
