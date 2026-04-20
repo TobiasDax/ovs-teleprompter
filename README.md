@@ -1,6 +1,11 @@
 # Teleprompter
 
-A lightweight, offline teleprompter for TV and video productions. Drop in a `.docx` script file and read it full-screen — no server, no build step, no internet required.
+A lightweight, offline teleprompter for TV and video productions. Drop in a `.docx` script file and read it full-screen — no server, no build step, no internet required.  
+This is meant for any usecase that requires a manually scrolled text instead of the automatic scrolling used in many professional teleprompter tools.   
+
+Writing the script in Word is a concession towards our non-technical staff and their needs for content production, having a manually scrolled teleprompter is needed to keep in sync with the experiments and interactions our videos contain.  
+
+We had a similar solution implemented as a theme for Wordpress but updates, security concerns and usability led us to the creation of this solution.
 
 ## What it does
 
@@ -17,6 +22,7 @@ The tool reads a structured Word document containing a production script table a
 
 ## How to use
 
+1. Clone the repo or download the `index.html` and `*.js` files
 1. Open `index.html` in a browser (or serve the folder over HTTPS)
 2. Drop a `.docx` file onto the upload area, or click to browse
 3. Read — scroll with the mouse or keyboard
@@ -33,13 +39,19 @@ This project was built entirely using [Claude Code](https://claude.ai/code) (Ant
 - Security hardening (Content Security Policy, extraction of inline scripts)
 - Git history cleaning with `git-filter-repo`
 
-No code was written by hand.
+The idea and outcome of the tool was driven by the existin wordpress based solution. No code was written by hand.
+
+One main goals of this project was to test out a complete vibe coded project to see how it would behave and work on something i had a real use case for.
 
 ## Security
 
 - All document content is sanitized with **DOMPurify** before DOM insertion — no raw HTML from user files ever reaches the page
 - A strict **Content Security Policy** (`script-src 'self'`) is set via meta tag, blocking inline script injection
 - All processing is local — no data leaves the browser
+
+## Updates
+
+This tool is provided as is and currently not is use, if you have any usecase for it feel free to try it out, fork it or create a PR.
 
 ## Dependencies
 
