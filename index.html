@@ -58,10 +58,10 @@
     <h1>Teleprompter</h1>
     <div id="drop-zone">
       <p>Skript hierher ziehen</p>
-      <input type="file" id="file-input" accept=".docx">
-      <label id="choose-label" for="file-input">Datei auswaehlen</label>
+      <input type="file" id="file-input" accept=".docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document">
+      <label id="choose-label" for="file-input">Datei auswählen</label>
     </div>
-    <div id="error-msg"></div>
+    <div id="error-msg" role="alert" aria-live="polite"></div>
   </div>
 
   <div id="teleprompter-screen">
