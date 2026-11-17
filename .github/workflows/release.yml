@@ -1,0 +1,45 @@
+name: Release binaries
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  build-release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: "1.23"
+
+      - name: Cross-compile binaries
+        run: |
+          mkdir dist
+          build() {
+            GOOS="$1" GOARCH="$2" CGO_ENABLED=0 go build -o "dist/teleprompter-$1-$2$3" .
+          }
+          build linux amd64 ""
+          build windows amd64 ".exe"
+          build darwin amd64 ""
+          build darwin arm64 ""
+
+      # GITHUB_TOKEN is provided automatically by Actions; the "contents:
+      # write" permission above is what lets it create/upload releases.
+      - name: Create release and upload binaries
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            gh release upload "$TAG" dist/* --clobber
+          else
+            gh release create "$TAG" dist/* --title "$TAG"
+          fi
