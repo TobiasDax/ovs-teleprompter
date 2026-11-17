@@ -22,12 +22,33 @@ The tool reads a structured Word document containing a production script table a
 
 ## How to use
 
-1. Clone the repo or download the `index.html` and `*.js` files
-1. Serve the folder locally and open it in a browser — e.g. `npx serve .` or `python -m http.server 3000`, then visit `http://localhost:3000`. Opening `index.html` directly as a `file://` URL will not work: the strict Content Security Policy's `script-src 'self'` does not apply to sibling files under `file://`, so `mammoth.min.js`/`purify.min.js` get silently blocked and nothing happens when you drop a file.
-2. Drop a `.docx` file onto the upload area, or click to browse
-3. Read — scroll with the mouse or keyboard
+1. Download the `teleprompter` binary for your OS from the [Releases](../../releases) page
+2. Run it (double-click, or `./teleprompter` in a terminal) — it starts a local server and opens your browser automatically
+3. Drop a `.docx` file onto the upload area, or click to browse
+4. Read — scroll with the mouse or keyboard
 
 A blank template file is included to get started.
+
+No Python, Node, or anything else needs to be installed — the binary is self-contained.
+
+### Development
+
+If you're editing `index.html`/`app.js` directly rather than rebuilding the binary, serve the folder locally and open it in a browser — e.g. `npx serve .` or `python -m http.server 3000`, then visit `http://localhost:3000`. Opening `index.html` directly as a `file://` URL will not work: the strict Content Security Policy's `script-src 'self'` does not apply to sibling files under `file://`, so `mammoth.min.js`/`purify.min.js` get silently blocked and nothing happens when you drop a file.
+
+### Building from source
+
+Requires a [Go](https://go.dev) toolchain (1.21+), nothing else — the binary embeds the static site and has no runtime dependencies.
+
+```sh
+go build -o teleprompter .
+```
+
+Cross-compile for another OS/architecture:
+
+```sh
+GOOS=windows GOARCH=amd64 go build -o teleprompter.exe .
+GOOS=darwin  GOARCH=arm64 go build -o teleprompter .
+```
 
 ## How it was built
 

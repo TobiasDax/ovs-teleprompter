@@ -1,0 +1,53 @@
+name: Release binaries
+
+on:
+  push:
+    tags:
+      - "v*"
+
+jobs:
+  build-release:
+    # Reuses the existing "daxlite-ci" runner (label: ubuntu-latest) also
+    # used by other repos on this Forgejo instance.
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: https://code.forgejo.org/actions/checkout@v4
+
+      - name: Install Go
+        uses: https://code.forgejo.org/actions/setup-go@v5
+        with:
+          go-version: "1.23"
+
+      - name: Cross-compile binaries
+        run: |
+          mkdir dist
+          build() {
+            GOOS="$1" GOARCH="$2" CGO_ENABLED=0 go build -o "dist/teleprompter-$1-$2$3" .
+          }
+          build linux amd64 ""
+          build windows amd64 ".exe"
+          build darwin amd64 ""
+          build darwin arm64 ""
+
+      # Requires a Forgejo Actions secret RELEASE_TOKEN: a personal access
+      # token (Settings -> Applications) with "write:repository" scope,
+      # used to create the release and upload assets via the Forgejo API.
+      - name: Create release and upload binaries
+        env:
+          RELEASE_TOKEN: ${{ secrets.RELEASE_TOKEN }}
+          SERVER_URL: ${{ github.server_url }}
+          REPO: ${{ github.repository }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          release_id=$(curl -sS -X POST \
+            -H "Authorization: token $RELEASE_TOKEN" \
+            -H "Content-Type: application/json" \
+            --data "{\"tag_name\":\"$TAG\",\"name\":\"$TAG\"}" \
+            "$SERVER_URL/api/v1/repos/$REPO/releases" | sed -n 's/.*"id":\([0-9]*\).*/\1/p' | head -1)
+          for f in dist/*; do
+            curl -sS -X POST \
+              -H "Authorization: token $RELEASE_TOKEN" \
+              -F "attachment=@$f" \
+              "$SERVER_URL/api/v1/repos/$REPO/releases/$release_id/assets?name=$(basename "$f")"
+          done
