@@ -40,14 +40,40 @@ jobs:
           REPO: ${{ github.repository }}
           TAG: ${{ github.ref_name }}
         run: |
-          release_id=$(curl -sS -X POST \
-            -H "Authorization: token $RELEASE_TOKEN" \
-            -H "Content-Type: application/json" \
-            --data "{\"tag_name\":\"$TAG\",\"name\":\"$TAG\"}" \
-            "$SERVER_URL/api/v1/repos/$REPO/releases" | sed -n 's/.*"id":\([0-9]*\).*/\1/p' | head -1)
+          apt-get update && apt-get install -y --no-install-recommends jq
+
+          api="$SERVER_URL/api/v1/repos/$REPO"
+
+          # request <method> <url> [curl-args...] — prints the body on success,
+          # fails loudly (instead of silently) on any non-2xx response.
+          request() {
+            method="$1"; url="$2"; shift 2
+            resp=$(curl -sS -w '\n%{http_code}' -X "$method" \
+              -H "Authorization: token $RELEASE_TOKEN" "$@" "$url")
+            status=$(echo "$resp" | tail -1)
+            body=$(echo "$resp" | sed '$d')
+            if [ "$status" -lt 200 ] || [ "$status" -ge 300 ]; then
+              echo "$method $url failed (HTTP $status): $body" >&2
+              return 1
+            fi
+            echo "$body"
+          }
+
+          # Create the release, or reuse it if a previous run already made it
+          # for this tag (e.g. a retry after an earlier asset-upload failure).
+          if release=$(request POST "$api/releases" \
+              -H "Content-Type: application/json" \
+              --data "{\"tag_name\":\"$TAG\",\"name\":\"$TAG\"}"); then
+            :
+          else
+            release=$(request GET "$api/releases/tags/$TAG") || exit 1
+          fi
+          release_id=$(echo "$release" | jq -r '.id')
+          echo "Release ID: $release_id"
+
           for f in dist/*; do
-            curl -sS -X POST \
-              -H "Authorization: token $RELEASE_TOKEN" \
-              -F "attachment=@$f" \
-              "$SERVER_URL/api/v1/repos/$REPO/releases/$release_id/assets?name=$(basename "$f")"
+            name=$(basename "$f")
+            request POST "$api/releases/$release_id/assets?name=$name" \
+              -F "attachment=@$f" > /dev/null || exit 1
+            echo "Uploaded $name"
           done
