@@ -22,22 +22,44 @@ function parseDocxHtml(html) {
   const allRows = Array.from(table.rows);
   if (allRows.length < 2) { throw new Error('Tabelle hat zu wenig Zeilen.'); }
 
-  // Validate header row
+  // Identify columns by header keyword rather than fixed position, so renamed/
+  // reordered/missing header labels (varying templates) still parse correctly.
   const headerCells = Array.from(allRows[0].querySelectorAll('td, th'));
   const headerTexts = headerCells.map(function(c) { return c.textContent.trim().toLowerCase(); });
-  const hasExpectedHeaders = (
-    headerTexts.some(function(t) { return t.includes('#'); }) &&
-    headerTexts.some(function(t) { return t.includes('bildebene'); }) &&
-    headerTexts.some(function(t) { return t.includes('tonebene'); })
-  );
-  if (!hasExpectedHeaders) {
+
+  function findColumn(keywords) {
+    return headerTexts.findIndex(function(t) {
+      return keywords.some(function(k) { return t.includes(k); });
+    });
+  }
+
+  const bildebeneIdx = findColumn(['bildebene']);
+  const tonebeneIdx  = findColumn(['tonebene']);
+  const bemerkungIdx = findColumn(['bemerkung', 'anmerkung']);
+
+  const missingColumns = [];
+  if (bildebeneIdx === -1) { missingColumns.push('Bildebene'); }
+  if (tonebeneIdx === -1) { missingColumns.push('Tonebene'); }
+  if (missingColumns.length > 0) {
     throw new Error(
-      'Unerwartetes Tabellenformat. Erwartet: # | Bildebene | Tonebene | Bemerkung. ' +
-      'Gefunden: ' + headerTexts.join(' | ')
+      'Pflichtspalte(n) nicht gefunden: ' + missingColumns.join(', ') + '. ' +
+      'Gefundene Spalten: ' + headerTexts.join(' | ')
     );
   }
 
+  // Whichever header isn't Bildebene/Tonebene/Bemerkung is treated as the
+  // scene-number column (typically the first one, e.g. "#" or left blank).
+  let numIdx = -1;
+  for (let h = 0; h < headerTexts.length; h++) {
+    if (h !== bildebeneIdx && h !== tonebeneIdx && h !== bemerkungIdx) { numIdx = h; break; }
+  }
+
+  function cellHtml(cells, idx) {
+    return (idx >= 0 && idx < cells.length) ? cells[idx].innerHTML : '';
+  }
+
   const rows = [];
+  let autoNumber = 0;
   for (let i = 1; i < allRows.length; i++) {
     const cells = Array.from(allRows[i].querySelectorAll('td, th'));
     if (cells.length === 0) { continue; }
@@ -51,18 +73,23 @@ function parseDocxHtml(html) {
       continue;
     }
 
-    // Content row: 4 cells
-    if (cells.length >= 4) {
-      rows.push({
-        type: 'content',
-        sceneNumber: cells[0].innerHTML,
-        bildebene:   cells[1].innerHTML,
-        tonebene:    cells[2].innerHTML,
-        bemerkung:   cells[3].innerHTML
-      });
-    } else {
+    // Content row: must at least have the required Bildebene/Tonebene columns
+    const requiredIdx = Math.max(bildebeneIdx, tonebeneIdx);
+    if (cells.length <= requiredIdx) {
       console.warn('parseDocxHtml: skipping row with unexpected cell count:', cells.length, 'at row index', i);
+      continue;
     }
+
+    autoNumber++;
+    const sceneNumber = numIdx === -1 ? String(autoNumber) : cellHtml(cells, numIdx);
+
+    rows.push({
+      type: 'content',
+      sceneNumber: sceneNumber,
+      bildebene:   cellHtml(cells, bildebeneIdx),
+      tonebene:    cellHtml(cells, tonebeneIdx),
+      bemerkung:   cellHtml(cells, bemerkungIdx)
+    });
   }
 
   if (rows.length === 0) { throw new Error('Keine Tabellenzeilen gefunden.'); }
