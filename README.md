@@ -23,7 +23,7 @@ The tool reads a structured Word document containing a production script table a
 ## How to use
 
 1. Clone the repo or download the `index.html` and `*.js` files
-1. Open `index.html` in a browser (or serve the folder over HTTPS)
+1. Serve the folder locally and open it in a browser — e.g. `npx serve .` or `python -m http.server 3000`, then visit `http://localhost:3000`. Opening `index.html` directly as a `file://` URL will not work: the strict Content Security Policy's `script-src 'self'` does not apply to sibling files under `file://`, so `mammoth.min.js`/`purify.min.js` get silently blocked and nothing happens when you drop a file.
 2. Drop a `.docx` file onto the upload area, or click to browse
 3. Read — scroll with the mouse or keyboard
 
